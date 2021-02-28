@@ -22,13 +22,13 @@ class GenerateGame extends Controller
         $filter = []; 
         $data = GenerateGame::board(); 
         $threeIndexs = GenerateGame::getConsecutiveIndex($data); 
+
         $winFormula =  GenerateGame::getListOfThreeWin($threeIndexs, $getData); 
         if (isset($winFormula)){
             echo json_encode($winFormula); 
         }
         
 	}
-    
 
     /**
      * Get three consecutive row number 
@@ -37,19 +37,20 @@ class GenerateGame extends Controller
      * @param array 
      * @return array 
      */
-    public static function getListOfThreeWin($array1, $array2)
+    public static function getListOfThreeWin($obj, $array2)
     {
 
         $winPair = []; 
-        if (count($array1) == 0) return $winPair; 
-        for ($i = 0;  $i < count($array1); ++$i){
-            $winRow = $array2[$array1[$i]]; 
-            $x = "";
-            for($j = 0; $j < count($winRow); ++$j){
-                     $x .= $winRow[$j]." "; 
-                 }
-            $winPair[$x] = 3;  
+       
+        if ($obj->index == null) return $winPair; 
+    
+        $i = $obj->index;
+        $winRow = $array2[$i]; 
+        $x = "";
+        for($j = 0; $j < count($winRow); ++$j){
+                    $x .= $winRow[$j]." "; 
         }
+        $winPair[$x] = $obj->sequence;  
 
         return $winPair; 
     }
@@ -61,22 +62,31 @@ class GenerateGame extends Controller
      * @return array 
      */
     public static function getConsecutiveIndex($array){
-        $indexes = []; 
+        //$indexes = []; 
+        $create  = (object)[];
+        $create->index = null; 
+        $create->sequence = null; 
          for ($i = 0 ; $i < count($array); ++$i){
              for ($j = 0; $j < 3 ; ++$j){
-                 $sliceArray = array_slice($array[$i], $j, 3); 
-                 $allValuesAreTheSame = (count(array_unique($sliceArray)) === 1);
-                 if ($allValuesAreTheSame){
-                     array_push($indexes, $i); 
+                 $sliceThree = array_slice($array[$i], $j, 3); 
+                 if(count(array_unique($sliceThree)) == 1) {
+                     $create->index = $i; 
+                     $create->sequence = 3; 
                  } 
              } 
-            if (count(array_unique($array[$i]))){
-                if (!in_array($indexes, $i)){
-                    array_push($indexes, $i); 
+             for ($k = 0; $k < 2 ; ++$k){
+                 $sliceFour = array_slice($array[$i], $k, 4); 
+                  if(count(array_unique($sliceFour)) == 1) {
+                        $create->index = $i; 
+                        $create->sequence = 4; 
                 }
+             } 
+            if (count(array_unique($array[$i])) == 1){
+                    $create->index = $i; 
+                    $create->sequence = 5; 
             }  
         }
-        return $indexes; 
+        return $create;
     }
 
     /**
@@ -118,12 +128,15 @@ class GenerateGame extends Controller
                  }
             echo "\r\n"; 
         }
+         /***
+         * Create random symbols bord
+         */
         $arr = array_chunk($row2, 5, false); 
         array_push($bord, $arr[0], $arr[1], $row3); 
         for($i = 0; $i < count($bord); ++$i) {
             $x = ""; 
             for ($j = 0; $j < count($bord[$i]); ++$j) {
-                  $x .=$bord[$i][$j] . " "; 
+                  $x .= $bord[$i][$j] . " "; 
             }
            echo $x . "\r\n"; 
         }  
@@ -168,13 +181,15 @@ class GenerateGame extends Controller
                  }
             echo "\r\n"; 
         } 
-
+        /***
+         * Create random number bord
+         */
         $arr = array_chunk($row2, 5, false); 
         array_push($paylines, $arr[0], $arr[1], $row3); 
         for($i = 0; $i < count($paylines); ++$i) {
             $x = ""; 
             for ($j = 0; $j < count($paylines[$i]); ++$j) {
-                  $x .=$paylines[$i][$j] . " "; 
+                  $x .= $paylines[$i][$j] . " "; 
             }
              echo $x . "\r\n"; 
         }  
