@@ -18,17 +18,42 @@ class GenerateGame extends Controller
         echo "\r\n"; 
         echo "==============================="; 
         echo "\r\n"; 
-        $pair = []; 
-        $filter = []; 
         $data = GenerateGame::board(); 
-        $threeIndexs = GenerateGame::getConsecutiveIndex($data); 
-
-        $winFormula =  GenerateGame::getListOfThreeWin($threeIndexs, $getData); 
+        $diagonal = GenerateGame::getDiagonalmatch($data, $getData);
+        echo json_encode($diagonal);  
+        $consecutiveIndexs = GenerateGame::getConsecutiveIndex($data); 
+        $winFormula =  GenerateGame::getListOfWins($consecutiveIndexs, $getData); 
+    
         if (isset($winFormula)){
             echo json_encode($winFormula); 
         }
         
 	}
+    /**
+     * Create game
+     *
+     * @param  void
+     * @return none
+     */
+    public static function getDiagonalmatch($bord, $numeric)
+    {
+        
+        $diagonlValue = (object)[]; 
+        $diagonlValue->zero = null; 
+        $diagonlValue->one = null; 
+        $diagonlValue->two = null; 
+
+        if (($bord[0][0] == $bord[1][1]) && ($bord[1][1]) == $bord[2][2]){
+            $diagonlValue->zero = $numeric[0][0] ."". $numeric[1][1]."".$numeric[2][2]; 
+        }
+        if (($bord[0][1] == $bord[1][2]) && ($bord[1][2]) == $bord[2][3]){
+            $diagonlValue->one = $numeric[0][1] ." ". $numeric[1][2]." ".$numeric[2][3]; 
+        }
+        if (($bord[0][2] == $bord[1][3]) && ($bord[1][3]) == $bord[2][4]){
+            $diagonlValue->one = $numeric[0][2] ."". $numeric[1][3]."".$numeric[2][4]; 
+        }
+     return $diagonlValue; 
+    }
 
     /**
      * Get three consecutive row number 
@@ -37,20 +62,23 @@ class GenerateGame extends Controller
      * @param array 
      * @return array 
      */
-    public static function getListOfThreeWin($obj, $array2)
+    public static function getListOfWins($obj, $array2)
     {
 
         $winPair = []; 
        
-        if ($obj->index == null) return $winPair; 
-    
-        $i = $obj->index;
-        $winRow = $array2[$i]; 
-        $x = "";
-        for($j = 0; $j < count($winRow); ++$j){
-                    $x .= $winRow[$j]." "; 
+        if (count($obj->index) == 0) return $winPair; 
+        for ($i = 0; $i < count($obj->index); ++$i){
+             $index = $obj->index[$i];
+            $winRow = $array2[$index]; 
+            $x = "";
+            for($j = 0; $j < count($winRow); ++$j){
+                        $x .= $winRow[$j]." "; 
+            }
+            $winPair[$x] = $obj->sequence;
         }
-        $winPair[$x] = $obj->sequence;  
+       
+      
 
         return $winPair; 
     }
@@ -64,27 +92,34 @@ class GenerateGame extends Controller
     public static function getConsecutiveIndex($array){
         //$indexes = []; 
         $create  = (object)[];
-        $create->index = null; 
+        $create->index = []; 
         $create->sequence = null; 
          for ($i = 0 ; $i < count($array); ++$i){
-             for ($j = 0; $j < 3 ; ++$j){
-                 $sliceThree = array_slice($array[$i], $j, 3); 
-                 if(count(array_unique($sliceThree)) == 1) {
-                     $create->index = $i; 
-                     $create->sequence = 3; 
-                 } 
-             } 
+            if (count(array_unique($array[$i])) == 1){
+                    if (!in_array($i, $create->index)){
+                         array_push($create->index, $i); 
+                         $create->sequence = 5; 
+                    }
+            }  
              for ($k = 0; $k < 2 ; ++$k){
                  $sliceFour = array_slice($array[$i], $k, 4); 
                   if(count(array_unique($sliceFour)) == 1) {
-                        $create->index = $i; 
+                      if (!in_array($i, $create->index)){
+                        array_push($create->index, $i); 
                         $create->sequence = 4; 
+                    }
                 }
              } 
-            if (count(array_unique($array[$i])) == 1){
-                    $create->index = $i; 
-                    $create->sequence = 5; 
-            }  
+              for ($j = 0; $j < 3 ; ++$j){
+                 $sliceThree = array_slice($array[$i], $j, 3); 
+                 if(count(array_unique($sliceThree)) == 1) {
+                    if (!in_array($i, $create->index)){
+                        array_push($create->index, $i); 
+                        $create->sequence = 3; 
+                    }
+                   
+                 } 
+             } 
         }
         return $create;
     }
