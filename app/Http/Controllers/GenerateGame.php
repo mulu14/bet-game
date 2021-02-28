@@ -19,6 +19,10 @@ class GenerateGame extends Controller
         echo "==============================="; 
         echo "\r\n"; 
         $data = GenerateGame::board(); 
+        echo "==============================="; 
+        echo "\r\n"; 
+        echo "==============================="; 
+        echo "\r\n"; 
         $diagonal = GenerateGame::getDiagonalmatch($data, $getData);
         echo json_encode($diagonal);  
         $consecutiveIndexs = GenerateGame::getConsecutiveIndex($data); 
@@ -38,16 +42,16 @@ class GenerateGame extends Controller
     public static function getDiagonalmatch($bord, $numeric)
     {
         
-        $diagonlValue = (object)[]; 
+        $diagonlValue = []; 
 
         if (($bord[0][0] == $bord[1][1]) && ($bord[1][1]) == $bord[2][2]){
-            $diagonlValue->zero = $numeric[0][0] ."". $numeric[1][1]."".$numeric[2][2]; 
+            $diagonlValue[$numeric[0][0] ." ". $numeric[1][1]." ".$numeric[2][2]] = 3; 
         }
         if (($bord[0][1] == $bord[1][2]) && ($bord[1][2]) == $bord[2][3]){
-            $diagonlValue->one = $numeric[0][1] ." ". $numeric[1][2]." ".$numeric[2][3]; 
+            $diagonlValue[$numeric[0][1] ." ". $numeric[1][2]." ".$numeric[2][3]]= 3; 
         }
         if (($bord[0][2] == $bord[1][3]) && ($bord[1][3]) == $bord[2][4]){
-            $diagonlValue->one = $numeric[0][2] ."". $numeric[1][3]."".$numeric[2][4]; 
+            $diagonlValue[$numeric[0][2] ." ". $numeric[1][3]." ".$numeric[2][4]] = 3; 
         }
      return $diagonlValue; 
     }
@@ -168,7 +172,7 @@ class GenerateGame extends Controller
         for($i = 0; $i < count($bord); ++$i) {
             $x = ""; 
             for ($j = 0; $j < count($bord[$i]); ++$j) {
-                  $x .= $bord[$i][$j] . " "; 
+                  $x .= $bord[$i][$j] . "   "; 
             }
            echo $x . "\r\n"; 
         }  
@@ -221,7 +225,7 @@ class GenerateGame extends Controller
         for($i = 0; $i < count($paylines); ++$i) {
             $x = ""; 
             for ($j = 0; $j < count($paylines[$i]); ++$j) {
-                  $x .= $paylines[$i][$j] . " "; 
+                  $x .= $paylines[$i][$j] . "  "; 
             }
              echo $x . "\r\n"; 
         }  
