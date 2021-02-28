@@ -21,7 +21,7 @@ class GenerateGame extends Controller
         $pair = []; 
         $filter = []; 
         $data = GenerateGame::board(); 
-        $threeIndexs = GenerateGame::getThreeConsecutiveIndex($data); 
+        $threeIndexs = GenerateGame::getConsecutiveIndex($data); 
         $winFormula =  GenerateGame::getListOfThreeWin($threeIndexs, $getData); 
         if (isset($winFormula)){
             echo json_encode($winFormula); 
@@ -39,13 +39,14 @@ class GenerateGame extends Controller
      */
     public static function getListOfThreeWin($array1, $array2)
     {
+
         $winPair = []; 
         if (count($array1) == 0) return $winPair; 
         for ($i = 0;  $i < count($array1); ++$i){
             $winRow = $array2[$array1[$i]]; 
             $x = "";
             for($j = 0; $j < count($winRow); ++$j){
-                     $x .= $array2[$i][$j]." "; 
+                     $x .= $winRow[$j]." "; 
                  }
             $winPair[$x] = 3;  
         }
@@ -59,7 +60,7 @@ class GenerateGame extends Controller
      * @param  array 
      * @return array 
      */
-    public static function getThreeConsecutiveIndex($array){
+    public static function getConsecutiveIndex($array){
         $indexes = []; 
          for ($i = 0 ; $i < count($array); ++$i){
              for ($j = 0; $j < 3 ; ++$j){
@@ -68,34 +69,16 @@ class GenerateGame extends Controller
                  if ($allValuesAreTheSame){
                      array_push($indexes, $i); 
                  } 
-             }   
-        }
-        return $indexes; 
-    }
-     /**
-     * Get the three consecutive symbols index
-     *
-     * @param  array 
-     * @return array 
-     */
-    public static function getFourConsecutiveIndex($array){
-        $indexes = []; 
-         for ($i = 0 ; $i < count($array); ++$i){
-             for ($j = 0; $j < 2 ; ++$j){
-                 $sliceArray = array_slice($array[$i], $j, 4); 
-                 $allValuesAreTheSame = (count(array_unique($sliceArray)) === 1);
-                if (!in_array($i, $indexes))
-                {
-                    array_push($indexes, $i);
+             } 
+            if (count(array_unique($array[$i]))){
+                if (!in_array($indexes, $i)){
+                    array_push($indexes, $i); 
                 }
-                  
-                 if ($allValuesAreTheSame){
-                     //array_push($win, $i); 
-                 } 
-             }   
+            }  
         }
         return $indexes; 
     }
+
     /**
      * Create game bord with random symbol
      *
