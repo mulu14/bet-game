@@ -39,9 +39,6 @@ class GenerateGame extends Controller
     {
         
         $diagonlValue = (object)[]; 
-        $diagonlValue->zero = null; 
-        $diagonlValue->one = null; 
-        $diagonlValue->two = null; 
 
         if (($bord[0][0] == $bord[1][1]) && ($bord[1][1]) == $bord[2][2]){
             $diagonlValue->zero = $numeric[0][0] ."". $numeric[1][1]."".$numeric[2][2]; 
