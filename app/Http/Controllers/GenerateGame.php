@@ -13,26 +13,55 @@ class GenerateGame extends Controller
      */
     public static function game()
     {
-        $getData = GenerateGame::paylines(); 
+       
+        $numericBoard = GenerateGame::paylines(); 
         echo "==============================="; 
         echo "\r\n"; 
         echo "==============================="; 
         echo "\r\n"; 
-        $data = GenerateGame::board(); 
+        $symbolBoard = GenerateGame::board(); 
         echo "==============================="; 
         echo "\r\n"; 
         echo "==============================="; 
         echo "\r\n"; 
-        $diagonal = GenerateGame::getDiagonalmatch($data, $getData);
-        echo json_encode($diagonal);  
-        $consecutiveIndexs = GenerateGame::getConsecutiveIndex($data); 
-        $winFormula =  GenerateGame::getListOfWins($consecutiveIndexs, $getData); 
-    
-        if (isset($winFormula)){
-            echo json_encode($winFormula); 
-        }
+        $printOutBet = (object)[]; 
+        $diagonal = GenerateGame::getDiagonalmatch($symbolBoard, $numericBoard);
+        $consecutiveIndexs = GenerateGame::getConsecutiveIndex($symbolBoard); 
+        $winFormula =  GenerateGame::getListOfWins($consecutiveIndexs, $numericBoard); 
+        $mergeWinRow = array_merge($winFormula, $diagonal); 
+        $calculateWin =  GenerateGame::calculatWin($mergeWinRow, 100); 
+        $printOutBet->board = call_user_func_array('array_merge', $symbolBoard); 
+        $printOutBet->paylines = $mergeWinRow; 
+        $printOutBet->bet_amount = 100; 
+        $printOutBet->total_win = $calculateWin; 
+        foreach($printOutBet as $key => $item)
+            echo  $key ." : ".json_encode($item) ."\r\n"; 
         
 	}
+
+    /**
+     * Calculate the win 
+     *
+     * @param  void
+     * @return none
+     */
+    public static function calculatWin($array, $bet){
+        $sum = 0; 
+        foreach($array as $key =>$value){
+            if ($value == 3){
+                $sum = $bet*0.2; 
+            }
+            if ($value == 4){
+                $sum = $bet * 2; 
+            }
+            if ($value == 5){
+                $sum = $bet * 10; 
+            }
+        }
+
+        return $sum; 
+
+    }
     /**
      * Create game
      *
@@ -57,9 +86,9 @@ class GenerateGame extends Controller
     }
 
     /**
-     * Get three consecutive row number 
+     * Get list of winning line of 
      * 
-     * @param array  
+     * @param object   
      * @param array 
      * @return array 
      */
@@ -79,7 +108,6 @@ class GenerateGame extends Controller
             $winPair[$x] = $obj->sequence;
         }
        
-      
 
         return $winPair; 
     }
