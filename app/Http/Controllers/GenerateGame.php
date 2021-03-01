@@ -42,8 +42,9 @@ class GenerateGame extends Controller
     /**
      * Calculate the win 
      *
-     * @param  void
-     * @return none
+     * @param  array
+     * @param int  
+     * @return int
      */
     public static function calculatWin($array, $bet){
         $sum = 0; 
@@ -63,10 +64,11 @@ class GenerateGame extends Controller
 
     }
     /**
-     * Create game
+     * Gate paylinen match from multi dimensional array
      *
-     * @param  void
-     * @return none
+     * @param array 
+     * @param array 
+     * @return array 
      */
     public static function getDiagonalmatch($bord, $numeric)
     {
@@ -86,7 +88,7 @@ class GenerateGame extends Controller
     }
 
     /**
-     * Get list of winning line of 
+     * Get list of winning line from paylines
      * 
      * @param object   
      * @param array 
@@ -192,9 +194,7 @@ class GenerateGame extends Controller
                  }
             echo "\r\n"; 
         }
-         /***
-         * Create random symbols bord
-         */
+    
         $arr = array_chunk($row2, 5, false); 
         array_push($bord, $arr[0], $arr[1], $row3); 
         for($i = 0; $i < count($bord); ++$i) {
